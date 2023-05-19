@@ -36,10 +36,11 @@ const convertNewLines = (text) =>
     </span>
   ))
 
-export function ChatLine({ role = 'assistant', content }) {
+export function ChatLine({ role = 'assistant', content, last_token_usage = 0 }) {
   if (!content) {
     return null
   }
+
   const formatteMessage = convertNewLines(content)
 
   return (
@@ -65,6 +66,10 @@ export function ChatLine({ role = 'assistant', content }) {
               >
                 {formatteMessage}
               </p>
+              {
+                role == 'assistant' ? <span className="font-large text-xs text-gray-600">Token Used: {last_token_usage} <br /> Price: ${0.002 * (last_token_usage / 1000)}</span> : ""
+              }
+
             </div>
           </div>
         </div>

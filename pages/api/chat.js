@@ -21,6 +21,7 @@ export default async function handler(req, res) {
         return res.status(400).json(body);
       }
       if (response.status == 200) {
+        console.log(body);
         return res.status(200).json(body);
       }
     } catch (error) {

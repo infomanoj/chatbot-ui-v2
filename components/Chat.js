@@ -10,6 +10,7 @@ export const initialMessages = [
   {
     role: 'assistant',
     content: 'Hi! I am a friendly AI assistant. Ask me anything!',
+    last_token_usage: 0
   },
 ]
 
@@ -48,6 +49,7 @@ export function Chat() {
   const [messages, setMessages] = useState(initialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [tokens, setTokens] = useState(0)
 
   // send message to API /api/chat endpoint
   const sendMessage = async (message) => {
@@ -57,7 +59,9 @@ export function Chat() {
     setLoading(true)
     const newMessages = [
       ...messages,
-      { role: 'user', content: message },
+      {
+        role: 'user', content: message, last_token_usage: 0
+      },
     ]
     setMessages(newMessages)
     const last10messages = newMessages.slice(-10) // remember last 10 messages
@@ -89,21 +93,22 @@ export function Chat() {
 
     let lastMessage = ''
 
-
     lastMessage = data.response
 
     setMessages([
       ...newMessages,
-      { role: 'assistant', content: lastMessage },
+      {
+        role: 'assistant', content: lastMessage, last_token_usage: data.last_token_usage
+      },
     ])
-
+    setTokens(data.total_token_usage)
     setLoading(false)
   }
 
   return (
     <div className="rounded-2xl border-zinc-100  lg:border lg:p-6">
-      {messages.map(({ content, role }, index) => (
-        <ChatLine key={index} role={role} content={content} />
+      {messages.map(({ content, role, last_token_usage }, index) => (
+        <ChatLine key={index} role={role} content={content} last_token_usage={last_token_usage} />
       ))}
 
       {loading && <LoadingChatLine />}
@@ -118,6 +123,10 @@ export function Chat() {
         setInput={setInput}
         sendMessage={sendMessage}
       />
+      <span className="font-large text-xs text-gray-600">
+        Total Token Used: {tokens} <br />
+        Total Price: ${0.002 * (tokens / 1000)}
+      </span>
     </div>
   )
 }
